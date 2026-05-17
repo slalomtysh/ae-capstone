@@ -1,0 +1,48 @@
+<main class="teams-page">
+  <header>
+    <h1>Team Selection</h1>
+    <p>Pick your favorites. {{ selected().size }}/20 selected</p>
+  </header>
+
+  <div class="toolbar">
+    @for (sport of sports; track sport) {
+      <button
+        type="button"
+        [class.active]="selectedSport() === sport"
+        (click)="setSport(sport)">
+        {{ sport | uppercase }}
+      </button>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ error() }} <button type="button" (click)="loadTeams()">Retry</button></p>
+  }
+
+  @if (limitMessage()) {
+    <p class="warn">{{ limitMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p>Loading teams...</p>
+  } @else {
+    <div class="team-grid">
+      @for (team of teams(); track team.teamId) {
+        <button type="button" class="team-chip" [class.selected]="isSelected(team.teamId)" (click)="toggleTeam(team)">
+          @if (team.logoUrl) {
+            <img [src]="team.logoUrl" [alt]="team.displayName + ' logo'" />
+          }
+          <span>{{ team.displayName }}</span>
+        </button>
+      }
+    </div>
+  }
+
+  <footer>
+    @if (saveMessage()) {
+      <span class="saved">{{ saveMessage() }}</span>
+    }
+    <button type="button" class="save" (click)="save()">Save & Home</button>
+    <a routerLink="/">Cancel</a>
+  </footer>
+</main>

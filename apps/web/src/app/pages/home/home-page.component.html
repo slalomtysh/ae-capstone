@@ -1,0 +1,91 @@
+<main class="home">
+  <header class="hero">
+    <h1>Live Games</h1>
+    <p>Scores update every 30 seconds for your favorite teams.</p>
+    <a class="pick-link" routerLink="/teams">choose your teams</a>
+  </header>
+
+  @if (error()) {
+    <section class="error-banner">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="refreshNow()">Retry</button>
+    </section>
+  }
+
+  @if (favorites().length === 0) {
+    <section class="empty-card">
+      <h2>choose your teams</h2>
+      <p>Select favorites to start your personalized scoreboard.</p>
+    </section>
+  } @else {
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Live Games</h2>
+        @if (liveMeta()?.isStale) {
+          <p class="stale">Stale data from {{ liveMeta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+        }
+      </div>
+
+      @if (live().length === 0) {
+        <p class="empty-text">No live games for your favorite teams right now.</p>
+      }
+
+      <div class="game-grid">
+        @for (game of live(); track game.eventId) {
+          <button class="game-card" type="button" (click)="openGame(game)">
+            <div class="card-top">
+              <span>{{ sportIcon(game.sport) }}</span>
+              <span class="status">{{ game.outcomeLabel ?? game.status }}</span>
+            </div>
+            <div class="teams">
+              <div>
+                <strong>{{ game.awayTeam.abbreviation }}</strong>
+                <span>{{ game.awayTeam.score ?? '-' }}</span>
+              </div>
+              <div>
+                <strong>{{ game.homeTeam.abbreviation }}</strong>
+                <span>{{ game.homeTeam.score ?? '-' }}</span>
+              </div>
+            </div>
+            <p>{{ game.startTimeUtc | date:'short' }}</p>
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="panel recent">
+      <div class="panel-header">
+        <h2>Recent Games (7 days)</h2>
+        @if (recentMeta()?.isStale) {
+          <p class="stale">Stale data from {{ recentMeta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+        }
+      </div>
+
+      @if (recent().length === 0) {
+        <p class="empty-text">No recent games in the last 7 days for your favorites.</p>
+      }
+
+      <div class="game-grid">
+        @for (game of recent(); track game.eventId) {
+          <button class="game-card" type="button" (click)="openGame(game)">
+            <div class="card-top">
+              <span>{{ sportIcon(game.sport) }}</span>
+              <span class="status">{{ game.outcomeLabel ?? game.status }}</span>
+            </div>
+            <div class="teams">
+              <div>
+                <strong>{{ game.awayTeam.abbreviation }}</strong>
+                <span>{{ game.awayTeam.score ?? '-' }}</span>
+              </div>
+              <div>
+                <strong>{{ game.homeTeam.abbreviation }}</strong>
+                <span>{{ game.homeTeam.score ?? '-' }}</span>
+              </div>
+            </div>
+            <p>{{ game.startTimeUtc | date:'short' }}</p>
+          </button>
+        }
+      </div>
+    </section>
+  }
+</main>
