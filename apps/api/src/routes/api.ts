@@ -4,7 +4,12 @@ import { withStaleFallback } from '../lib/withStaleFallback.js';
 import { parseDays, parseSports, requireSport, requireTeamIds } from '../lib/query.js';
 import { buildTeamsUrl } from '../espn/urls.js';
 import { mapTeams } from '../espn/mappers.js';
-import { fetchGameDetail, fetchLiveGames, fetchRecentGames } from '../services/gamesService.js';
+import {
+  fetchGameDetail,
+  fetchLiveGames,
+  fetchRecentGames,
+  fetchUpcomingGames,
+} from '../services/gamesService.js';
 import type { EspnClient } from '../types.js';
 
 export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Router {
@@ -29,7 +34,23 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
       const teamIds = requireTeamIds(req.query.teamIds);
       const sports = parseSports(req.query.sports);
       const cacheKey = `games:live:${sports.join('|')}:${teamIds.join('|')}`;
-      const response = await withStaleFallback(cache, cacheKey, () => fetchLiveGames(espnClient, sports, teamIds));
+      const response = await withStaleFallback(cache, cacheKey, () =>
+        fetchLiveGames(espnClient, sports, teamIds),
+      );
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get('/games/upcoming', async (req, res, next) => {
+    try {
+      const teamIds = requireTeamIds(req.query.teamIds);
+      const sports = parseSports(req.query.sports);
+      const cacheKey = `games:upcoming:${sports.join('|')}:${teamIds.join('|')}`;
+      const response = await withStaleFallback(cache, cacheKey, () =>
+        fetchUpcomingGames(espnClient, sports, teamIds),
+      );
       res.json(response);
     } catch (error) {
       next(error);
@@ -42,7 +63,9 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
       const sports = parseSports(req.query.sports);
       const days = parseDays(req.query.days, 7);
       const cacheKey = `games:recent:${sports.join('|')}:${teamIds.join('|')}:${days}`;
-      const response = await withStaleFallback(cache, cacheKey, () => fetchRecentGames(espnClient, sports, teamIds, days));
+      const response = await withStaleFallback(cache, cacheKey, () =>
+        fetchRecentGames(espnClient, sports, teamIds, days),
+      );
       res.json(response);
     } catch (error) {
       next(error);
@@ -54,7 +77,9 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
       const eventId = req.params.eventId;
       const sport = requireSport(req.query.sport);
       const cacheKey = `games:detail:${sport}:${eventId}`;
-      const response = await withStaleFallback(cache, cacheKey, () => fetchGameDetail(espnClient, sport, eventId));
+      const response = await withStaleFallback(cache, cacheKey, () =>
+        fetchGameDetail(espnClient, sport, eventId),
+      );
       res.json(response);
     } catch (error) {
       next(error);

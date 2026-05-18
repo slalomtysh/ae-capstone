@@ -76,6 +76,25 @@
   text-transform: capitalize;
 }
 
+.panel.upcoming {
+  background: #f4f8ff;
+  box-shadow: 0 6px 24px rgba(19, 40, 90, 0.07);
+}
+
+.upcoming-card {
+  background: #e8f0fe;
+
+  &:hover {
+    background: #d2e3fc;
+  }
+}
+
+.upcoming-badge {
+  font-size: 0.78rem;
+  color: #1a56af;
+  font-weight: 600;
+}
+
 .empty-card {
   margin-top: 1rem;
   border: 2px dashed #66a76f;

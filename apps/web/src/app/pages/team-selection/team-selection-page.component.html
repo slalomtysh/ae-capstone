@@ -6,10 +6,7 @@
 
   <div class="toolbar">
     @for (sport of sports; track sport) {
-      <button
-        type="button"
-        [class.active]="selectedSport() === sport"
-        (click)="setSport(sport)">
+      <button type="button" [class.active]="selectedSport() === sport" (click)="setSport(sport)">
         {{ sport | uppercase }}
       </button>
     }
@@ -28,7 +25,12 @@
   } @else {
     <div class="team-grid">
       @for (team of teams(); track team.teamId) {
-        <button type="button" class="team-chip" [class.selected]="isSelected(team.teamId)" (click)="toggleTeam(team)">
+        <button
+          type="button"
+          class="team-chip"
+          [class.selected]="isSelected(team.teamId)"
+          (click)="toggleTeam(team)"
+        >
           @if (team.logoUrl) {
             <img [src]="team.logoUrl" [alt]="team.displayName + ' logo'" />
           }

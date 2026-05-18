@@ -8,7 +8,7 @@ import type { GameDetailDto, ResponseMetaDto } from '../../core/models';
   selector: 'app-game-view-page',
   imports: [CommonModule, RouterLink],
   templateUrl: './game-view-page.component.html',
-  styleUrl: './game-view-page.component.scss'
+  styleUrl: './game-view-page.component.scss',
 })
 export class GameViewPageComponent {
   private readonly route = inject(ActivatedRoute);
@@ -45,7 +45,7 @@ export class GameViewPageComponent {
       error: () => {
         this.error.set('Unable to load game details.');
         this.loading.set(false);
-      }
+      },
     });
   }
 }

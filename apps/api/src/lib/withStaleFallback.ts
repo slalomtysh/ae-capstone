@@ -10,21 +10,21 @@ function buildMeta(isStale: boolean, lastSuccessfulRefreshUtc: string | null): R
     isStale,
     lastSuccessfulRefreshUtc,
     generatedAtUtc: new Date().toISOString(),
-    staleTtlMinutes: STALE_TTL_MINUTES
+    staleTtlMinutes: STALE_TTL_MINUTES,
   };
 }
 
 export async function withStaleFallback<T>(
   cache: MemoryCache,
   cacheKey: string,
-  fetcher: () => Promise<T>
+  fetcher: () => Promise<T>,
 ): Promise<ApiResponse<T>> {
   try {
     const data = await fetcher();
     const entry = cache.set(cacheKey, data);
     return {
       data,
-      meta: buildMeta(false, entry.lastSuccessfulRefreshUtc)
+      meta: buildMeta(false, entry.lastSuccessfulRefreshUtc),
     };
   } catch (error) {
     const cached = cache.get<T>(cacheKey);
@@ -33,14 +33,14 @@ export async function withStaleFallback<T>(
       if (ageMs <= STALE_TTL_MS) {
         return {
           data: cached.value,
-          meta: buildMeta(true, cached.lastSuccessfulRefreshUtc)
+          meta: buildMeta(true, cached.lastSuccessfulRefreshUtc),
         };
       }
     }
 
     throw new UpstreamError('Upstream failed and no eligible stale cache was available', {
       staleTtlMinutes: STALE_TTL_MINUTES,
-      cause: error instanceof Error ? error.message : String(error)
+      cause: error instanceof Error ? error.message : String(error),
     });
   }
 }

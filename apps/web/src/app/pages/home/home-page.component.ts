@@ -10,7 +10,7 @@ import type { ApiResponse, GameSummaryDto } from '../../core/models';
   selector: 'app-home-page',
   imports: [CommonModule, RouterLink],
   templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss'
+  styleUrl: './home-page.component.scss',
 })
 export class HomePageComponent {
   private readonly api = inject(ApiService);
@@ -20,8 +20,10 @@ export class HomePageComponent {
 
   readonly favorites = this.favoritesService.favorites;
   readonly live = signal<GameSummaryDto[]>([]);
+  readonly upcoming = signal<GameSummaryDto[]>([]);
   readonly recent = signal<GameSummaryDto[]>([]);
   readonly liveMeta = signal<ApiResponse<GameSummaryDto[]>['meta'] | null>(null);
+  readonly upcomingMeta = signal<ApiResponse<GameSummaryDto[]>['meta'] | null>(null);
   readonly recentMeta = signal<ApiResponse<GameSummaryDto[]>['meta'] | null>(null);
   readonly error = signal<string | null>(null);
 
@@ -35,6 +37,7 @@ export class HomePageComponent {
 
       if (favorites.length === 0) {
         this.live.set([]);
+        this.upcoming.set([]);
         this.recent.set([]);
         return;
       }
@@ -57,18 +60,21 @@ export class HomePageComponent {
 
     forkJoin({
       live: this.api.getLiveGames(teamIds, sports),
-      recent: this.api.getRecentGames(teamIds, sports, 7)
+      upcoming: this.api.getUpcomingGames(teamIds, sports),
+      recent: this.api.getRecentGames(teamIds, sports, 7),
     }).subscribe({
-      next: ({ live, recent }) => {
+      next: ({ live, upcoming, recent }) => {
         this.error.set(null);
         this.live.set(live.data);
+        this.upcoming.set(upcoming.data);
         this.recent.set(recent.data);
         this.liveMeta.set(live.meta);
+        this.upcomingMeta.set(upcoming.meta);
         this.recentMeta.set(recent.meta);
       },
       error: () => {
         this.error.set('Unable to refresh games right now. Please try again.');
-      }
+      },
     });
   }
 

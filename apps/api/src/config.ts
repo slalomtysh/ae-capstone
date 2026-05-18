@@ -3,15 +3,7 @@ export const ESPN_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports';
 export const UPSTREAM_TIMEOUT_MS = 8000;
 export const UPSTREAM_RETRY_COUNT = 1;
 
-export const SUPPORTED_SPORTS = [
-  'nfl',
-  'nba',
-  'mlb',
-  'nhl',
-  'ncaaf',
-  'ncaam',
-  'soccer'
-] as const;
+export const SUPPORTED_SPORTS = ['nfl', 'nba', 'mlb', 'nhl', 'ncaaf', 'ncaam', 'soccer'] as const;
 
 export type SportKey = (typeof SUPPORTED_SPORTS)[number];
 
@@ -22,5 +14,5 @@ export const SPORT_PATHS: Record<SportKey, { sport: string; league: string }> = 
   nhl: { sport: 'hockey', league: 'nhl' },
   ncaaf: { sport: 'football', league: 'college-football' },
   ncaam: { sport: 'basketball', league: 'mens-college-basketball' },
-  soccer: { sport: 'soccer', league: 'eng.1' }
+  soccer: { sport: 'soccer', league: 'eng.1' },
 };

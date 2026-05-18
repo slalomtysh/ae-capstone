@@ -22,7 +22,9 @@
       <div class="panel-header">
         <h2>Live Games</h2>
         @if (liveMeta()?.isStale) {
-          <p class="stale">Stale data from {{ liveMeta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+          <p class="stale">
+            Stale data from {{ liveMeta()?.lastSuccessfulRefreshUtc | date: 'short' }}
+          </p>
         }
       </div>
 
@@ -47,7 +49,42 @@
                 <span>{{ game.homeTeam.score ?? '-' }}</span>
               </div>
             </div>
-            <p>{{ game.startTimeUtc | date:'short' }}</p>
+            <p>{{ game.startTimeUtc | date: 'short' }}</p>
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="panel upcoming">
+      <div class="panel-header">
+        <h2>Upcoming Games (next 7 days)</h2>
+        @if (upcomingMeta()?.isStale) {
+          <p class="stale">
+            Stale data from {{ upcomingMeta()?.lastSuccessfulRefreshUtc | date: 'short' }}
+          </p>
+        }
+      </div>
+
+      @if (upcoming().length === 0) {
+        <p class="empty-text">No upcoming games in the next 7 days for your favorites.</p>
+      }
+
+      <div class="game-grid">
+        @for (game of upcoming(); track game.eventId) {
+          <button class="game-card upcoming-card" type="button" (click)="openGame(game)">
+            <div class="card-top">
+              <span>{{ sportIcon(game.sport) }}</span>
+              <span class="upcoming-badge">📅 Scheduled</span>
+            </div>
+            <div class="teams">
+              <div>
+                <strong>{{ game.awayTeam.abbreviation }}</strong>
+              </div>
+              <div>
+                <strong>{{ game.homeTeam.abbreviation }}</strong>
+              </div>
+            </div>
+            <p>{{ game.startTimeUtc | date: 'medium' }}</p>
           </button>
         }
       </div>
@@ -55,9 +92,11 @@
 
     <section class="panel recent">
       <div class="panel-header">
-        <h2>Recent Games (7 days)</h2>
+        <h2>Recent Games (last 7 days)</h2>
         @if (recentMeta()?.isStale) {
-          <p class="stale">Stale data from {{ recentMeta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+          <p class="stale">
+            Stale data from {{ recentMeta()?.lastSuccessfulRefreshUtc | date: 'short' }}
+          </p>
         }
       </div>
 
@@ -82,7 +121,7 @@
                 <span>{{ game.homeTeam.score ?? '-' }}</span>
               </div>
             </div>
-            <p>{{ game.startTimeUtc | date:'short' }}</p>
+            <p>{{ game.startTimeUtc | date: 'short' }}</p>
           </button>
         }
       </div>

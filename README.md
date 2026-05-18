@@ -11,11 +11,11 @@
 - Product requirements: docs/product-requirements.md
 - Original overview: docs/project-overview.md
 - Feature specs:
-	- docs/specs/live-games.spec.md
-	- docs/specs/recent-games.spec.md
-	- docs/specs/game-view.spec.md
-	- docs/specs/team-selection.spec.md
-	- docs/specs/backend-api.spec.md
+  - docs/specs/live-games.spec.md
+  - docs/specs/recent-games.spec.md
+  - docs/specs/game-view.spec.md
+  - docs/specs/team-selection.spec.md
+  - docs/specs/backend-api.spec.md
 - Architecture: docs/architecture.md
 - Data contracts: docs/data-contracts.md
 - QA strategy: docs/qa-test-strategy.md

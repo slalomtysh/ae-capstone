@@ -12,7 +12,7 @@ function toTeamScoreDto(raw: any): TeamScoreDto {
     abbreviation: String(raw?.team?.abbreviation ?? ''),
     logoUrl: raw?.team?.logo ?? raw?.team?.logos?.[0]?.href ?? null,
     score: toNumberOrNull(raw?.score),
-    record: raw?.records?.[0]?.summary ?? null
+    record: raw?.records?.[0]?.summary ?? null,
   };
 }
 
@@ -24,7 +24,12 @@ function deriveStatus(rawStatus: any): GameStatus {
   if (description.includes('postponed') || detail.includes('postponed')) {
     return 'postponed';
   }
-  if (description.includes('canceled') || description.includes('cancelled') || detail.includes('canceled') || detail.includes('cancelled')) {
+  if (
+    description.includes('canceled') ||
+    description.includes('cancelled') ||
+    detail.includes('canceled') ||
+    detail.includes('cancelled')
+  ) {
     return 'postponed';
   }
   if (description.includes('delayed') || detail.includes('delayed')) {
@@ -40,7 +45,8 @@ function deriveStatus(rawStatus: any): GameStatus {
 }
 
 function deriveOutcomeLabel(rawEvent: any): 'Tie' | 'Canceled' | 'Postponed' | null {
-  const rawText = `${rawEvent?.status?.type?.description ?? ''} ${rawEvent?.status?.type?.detail ?? ''}`.toLowerCase();
+  const rawText =
+    `${rawEvent?.status?.type?.description ?? ''} ${rawEvent?.status?.type?.detail ?? ''}`.toLowerCase();
   if (rawText.includes('canceled') || rawText.includes('cancelled')) {
     return 'Canceled';
   }
@@ -63,8 +69,10 @@ function deriveOutcomeLabel(rawEvent: any): 'Tie' | 'Canceled' | 'Postponed' | n
 
 export function mapGameSummary(rawEvent: any, sport: string): GameSummaryDto {
   const competitors = rawEvent?.competitions?.[0]?.competitors ?? [];
-  const homeRaw = competitors.find((team: any) => team?.homeAway === 'home') ?? competitors[0] ?? {};
-  const awayRaw = competitors.find((team: any) => team?.homeAway === 'away') ?? competitors[1] ?? {};
+  const homeRaw =
+    competitors.find((team: any) => team?.homeAway === 'home') ?? competitors[0] ?? {};
+  const awayRaw =
+    competitors.find((team: any) => team?.homeAway === 'away') ?? competitors[1] ?? {};
 
   return {
     eventId: String(rawEvent?.id ?? ''),
@@ -74,7 +82,7 @@ export function mapGameSummary(rawEvent: any, sport: string): GameSummaryDto {
     startTimeUtc: String(rawEvent?.date ?? new Date().toISOString()),
     homeTeam: toTeamScoreDto(homeRaw),
     awayTeam: toTeamScoreDto(awayRaw),
-    venue: rawEvent?.competitions?.[0]?.venue?.fullName ?? null
+    venue: rawEvent?.competitions?.[0]?.venue?.fullName ?? null,
   };
 }
 
@@ -85,17 +93,23 @@ export function mapGameDetail(rawSummary: any, rawDetail: any, sport: string): G
   return {
     summary,
     teamStats: rawDetail?.boxscore?.teams ?? [],
-    playerStats: rawDetail?.boxscore?.players ?? rawDetail?.players ?? []
+    playerStats: rawDetail?.boxscore?.players ?? rawDetail?.players ?? [],
   };
 }
 
-export function mapTeams(raw: any): Array<{ teamId: string; displayName: string; abbreviation: string; sport: string; logoUrl: string | null }> {
+export function mapTeams(raw: any): Array<{
+  teamId: string;
+  displayName: string;
+  abbreviation: string;
+  sport: string;
+  logoUrl: string | null;
+}> {
   const teams = raw?.sports?.[0]?.leagues?.[0]?.teams ?? [];
   return teams.map((entry: any) => ({
     teamId: String(entry?.team?.id ?? ''),
     displayName: String(entry?.team?.displayName ?? entry?.team?.name ?? 'Unknown Team'),
     abbreviation: String(entry?.team?.abbreviation ?? ''),
     sport: String(raw?.sports?.[0]?.slug ?? ''),
-    logoUrl: entry?.team?.logos?.[0]?.href ?? null
+    logoUrl: entry?.team?.logos?.[0]?.href ?? null,
   }));
 }

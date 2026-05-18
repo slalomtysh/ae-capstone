@@ -11,7 +11,7 @@ export class MemoryCache {
     const entry: CacheEntry<T> = {
       value,
       storedAtMs: Date.now(),
-      lastSuccessfulRefreshUtc: new Date().toISOString()
+      lastSuccessfulRefreshUtc: new Date().toISOString(),
     };
     this.store.set(key, entry);
     return entry;

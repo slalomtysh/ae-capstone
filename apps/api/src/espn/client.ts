@@ -20,7 +20,10 @@ export class DefaultEspnClient implements EspnClient {
       try {
         const response = await fetchWithTimeout(url, UPSTREAM_TIMEOUT_MS);
         if (!response.ok) {
-          throw new UpstreamError(`Upstream request failed with status ${response.status}`, { url, status: response.status });
+          throw new UpstreamError(`Upstream request failed with status ${response.status}`, {
+            url,
+            status: response.status,
+          });
         }
         return (await response.json()) as T;
       } catch (error) {
@@ -31,7 +34,7 @@ export class DefaultEspnClient implements EspnClient {
     throw new UpstreamError('Upstream request failed after retry policy', {
       url,
       retries: UPSTREAM_RETRY_COUNT,
-      cause: lastError instanceof Error ? lastError.message : String(lastError)
+      cause: lastError instanceof Error ? lastError.message : String(lastError),
     });
   }
 }

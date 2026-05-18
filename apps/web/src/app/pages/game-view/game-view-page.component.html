@@ -10,17 +10,20 @@
     </section>
   } @else if (detail()) {
     <section class="summary">
-      <h1>{{ detail()!.summary.awayTeam.displayName }} at {{ detail()!.summary.homeTeam.displayName }}</h1>
+      <h1>
+        {{ detail()!.summary.awayTeam.displayName }} at {{ detail()!.summary.homeTeam.displayName }}
+      </h1>
       <p>
-        {{ detail()!.summary.awayTeam.abbreviation }} {{ detail()!.summary.awayTeam.score ?? '-' }} -
+        {{ detail()!.summary.awayTeam.abbreviation }}
+        {{ detail()!.summary.awayTeam.score ?? '-' }} -
         {{ detail()!.summary.homeTeam.abbreviation }} {{ detail()!.summary.homeTeam.score ?? '-' }}
       </p>
       <p>
         {{ detail()!.summary.outcomeLabel ?? detail()!.summary.status }} ·
-        {{ detail()!.summary.startTimeUtc | date:'short' }}
+        {{ detail()!.summary.startTimeUtc | date: 'short' }}
       </p>
       @if (meta()?.isStale) {
-        <p class="stale">Stale data from {{ meta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+        <p class="stale">Stale data from {{ meta()?.lastSuccessfulRefreshUtc | date: 'short' }}</p>
       }
     </section>
 

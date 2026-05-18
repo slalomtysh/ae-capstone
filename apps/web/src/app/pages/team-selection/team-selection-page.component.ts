@@ -9,7 +9,7 @@ import type { FavoriteTeam, TeamDto } from '../../core/models';
   selector: 'app-team-selection-page',
   imports: [CommonModule, RouterLink],
   templateUrl: './team-selection-page.component.html',
-  styleUrl: './team-selection-page.component.scss'
+  styleUrl: './team-selection-page.component.scss',
 })
 export class TeamSelectionPageComponent {
   private readonly api = inject(ApiService);
@@ -56,7 +56,7 @@ export class TeamSelectionPageComponent {
       error: () => {
         this.loading.set(false);
         this.error.set('Unable to load teams right now.');
-      }
+      },
     });
   }
 
@@ -82,7 +82,7 @@ export class TeamSelectionPageComponent {
     next.set(team.teamId, {
       teamId: team.teamId,
       sport: this.selectedSport(),
-      teamName: team.displayName
+      teamName: team.displayName,
     });
     this.limitMessage.set(null);
     this.selected.set(next);

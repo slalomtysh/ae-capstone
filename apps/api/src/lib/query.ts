@@ -14,7 +14,11 @@ export function parseCsvParam(input: unknown): string[] {
 export function requireTeamIds(input: unknown): string[] {
   const ids = parseCsvParam(input);
   if (ids.length === 0) {
-    throw new ApiError(400, 'INVALID_QUERY', 'teamIds is required and must be a comma-separated list');
+    throw new ApiError(
+      400,
+      'INVALID_QUERY',
+      'teamIds is required and must be a comma-separated list',
+    );
   }
   return ids;
 }
