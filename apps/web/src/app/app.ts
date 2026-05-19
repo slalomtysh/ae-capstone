@@ -8,7 +8,9 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     <header class="topbar">
       <div class="brand">Scoreboard HQ</div>
       <nav>
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+          >Home</a
+        >
         <a routerLink="/teams" routerLinkActive="active">Team Selection</a>
       </nav>
     </header>
@@ -44,7 +46,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
       nav a.active {
         text-decoration: underline;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class App {}

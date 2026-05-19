@@ -3,6 +3,12 @@
 
   @if (loading()) {
     <p>Loading game details...</p>
+  } @else if (notFound()) {
+    <section class="error-box">
+      <h1>Game Not Found</h1>
+      <p>{{ error() }}</p>
+      <a routerLink="/" class="home-button">Back to Home</a>
+    </section>
   } @else if (error()) {
     <section class="error-box">
       <p>{{ error() }}</p>
@@ -10,37 +16,91 @@
     </section>
   } @else if (detail()) {
     <section class="summary">
-      <h1>{{ detail()!.summary.awayTeam.displayName }} at {{ detail()!.summary.homeTeam.displayName }}</h1>
+      <h1>
+        {{ detail()!.summary.awayTeam.displayName }} at {{ detail()!.summary.homeTeam.displayName }}
+      </h1>
+      <div class="matchup-logos">
+        <div class="team-logo-block">
+          @if (detail()!.summary.awayTeam.logoUrl) {
+            <img [src]="detail()!.summary.awayTeam.logoUrl!" [alt]="detail()!.summary.awayTeam.displayName + ' logo'" />
+          }
+          <span>{{ detail()!.summary.awayTeam.abbreviation }}</span>
+        </div>
+        <span class="vs">vs</span>
+        <div class="team-logo-block">
+          @if (detail()!.summary.homeTeam.logoUrl) {
+            <img [src]="detail()!.summary.homeTeam.logoUrl!" [alt]="detail()!.summary.homeTeam.displayName + ' logo'" />
+          }
+          <span>{{ detail()!.summary.homeTeam.abbreviation }}</span>
+        </div>
+      </div>
       <p>
-        {{ detail()!.summary.awayTeam.abbreviation }} {{ detail()!.summary.awayTeam.score ?? '-' }} -
+        {{ detail()!.summary.awayTeam.abbreviation }}
+        {{ detail()!.summary.awayTeam.score ?? '-' }} -
         {{ detail()!.summary.homeTeam.abbreviation }} {{ detail()!.summary.homeTeam.score ?? '-' }}
       </p>
       <p>
         {{ detail()!.summary.outcomeLabel ?? detail()!.summary.status }} ·
-        {{ detail()!.summary.startTimeUtc | date:'short' }}
+        {{ detail()!.summary.startTimeUtc | date: 'short' }}
       </p>
       @if (meta()?.isStale) {
-        <p class="stale">Stale data from {{ meta()?.lastSuccessfulRefreshUtc | date:'short' }}</p>
+        <p class="stale">Stale data from {{ meta()?.lastSuccessfulRefreshUtc | date: 'short' }}</p>
       }
     </section>
 
     <section class="stats">
       <h2>Team Stat Groups</h2>
-      @if (detail()!.teamStats.length === 0) {
+      @if (teamStatGroups().length === 0) {
         <p class="unavailable">No team stats available.</p>
       }
-      @for (group of detail()!.teamStats; track $index) {
-        <pre>{{ group | json }}</pre>
+      @for (group of teamStatGroups(); track group.title) {
+        <article class="stat-group">
+          <h3>{{ group.title }}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Stat</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of group.rows; track row.label + ':' + row.value + ':' + $index) {
+                <tr>
+                  <th scope="row">{{ row.label }}</th>
+                  <td>{{ row.value }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </article>
       }
     </section>
 
     <section class="stats">
       <h2>Player Stat Groups</h2>
-      @if (detail()!.playerStats.length === 0) {
+      @if (playerStatGroups().length === 0) {
         <p class="unavailable">No player stats available.</p>
       }
-      @for (group of detail()!.playerStats; track $index) {
-        <pre>{{ group | json }}</pre>
+      @for (group of playerStatGroups(); track group.title) {
+        <article class="stat-group">
+          <h3>{{ group.title }}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Stat</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of group.rows; track row.label + ':' + row.value + ':' + $index) {
+                <tr>
+                  <th scope="row">{{ row.label }}</th>
+                  <td>{{ row.value }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </article>
       }
     </section>
   }

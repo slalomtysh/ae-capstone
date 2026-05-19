@@ -5,6 +5,7 @@ import type { ApiResponse, GameDetailDto, GameSummaryDto, TeamDto } from './mode
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly apiBase = '/api';
+  private readonly browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -16,20 +17,34 @@ export class ApiService {
   getLiveGames(teamIds: string[], sports: string[]) {
     const params = new HttpParams()
       .set('teamIds', teamIds.join(','))
-      .set('sports', sports.join(','));
+      .set('sports', sports.join(','))
+      .set('timezone', this.browserTimeZone);
     return this.http.get<ApiResponse<GameSummaryDto[]>>(`${this.apiBase}/games/live`, { params });
+  }
+
+  getUpcomingGames(teamIds: string[], sports: string[]) {
+    const params = new HttpParams()
+      .set('teamIds', teamIds.join(','))
+      .set('sports', sports.join(','))
+      .set('timezone', this.browserTimeZone);
+    return this.http.get<ApiResponse<GameSummaryDto[]>>(`${this.apiBase}/games/upcoming`, {
+      params,
+    });
   }
 
   getRecentGames(teamIds: string[], sports: string[], days = 7) {
     const params = new HttpParams()
       .set('teamIds', teamIds.join(','))
       .set('sports', sports.join(','))
+      .set('timezone', this.browserTimeZone)
       .set('days', String(days));
     return this.http.get<ApiResponse<GameSummaryDto[]>>(`${this.apiBase}/games/recent`, { params });
   }
 
   getGameDetail(sport: string, eventId: string) {
     const params = new HttpParams().set('sport', sport);
-    return this.http.get<ApiResponse<GameDetailDto>>(`${this.apiBase}/games/${eventId}`, { params });
+    return this.http.get<ApiResponse<GameDetailDto>>(`${this.apiBase}/games/${eventId}`, {
+      params,
+    });
   }
 }

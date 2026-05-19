@@ -14,7 +14,11 @@ export function parseCsvParam(input: unknown): string[] {
 export function requireTeamIds(input: unknown): string[] {
   const ids = parseCsvParam(input);
   if (ids.length === 0) {
-    throw new ApiError(400, 'INVALID_QUERY', 'teamIds is required and must be a comma-separated list');
+    throw new ApiError(
+      400,
+      'INVALID_QUERY',
+      'teamIds is required and must be a comma-separated list',
+    );
   }
   return ids;
 }
@@ -53,4 +57,19 @@ export function parseDays(input: unknown, fallback = 7): number {
     throw new ApiError(400, 'INVALID_QUERY', 'days must be a number between 1 and 30');
   }
   return Math.floor(parsed);
+}
+
+export function parseTimeZone(input: unknown, fallback = 'UTC'): string {
+  if (typeof input !== 'string' || !input.trim()) {
+    return fallback;
+  }
+
+  const value = input.trim();
+  try {
+    // Throws RangeError for invalid IANA time zone identifiers.
+    new Intl.DateTimeFormat('en-US', { timeZone: value });
+    return value;
+  } catch {
+    return fallback;
+  }
 }

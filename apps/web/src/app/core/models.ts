@@ -11,6 +11,7 @@ export interface TeamDto {
   displayName: string;
   abbreviation: string;
   sport: string;
+  conference?: string | null;
   logoUrl: string | null;
 }
 
@@ -50,4 +51,15 @@ export interface ResponseMetaDto {
 export interface ApiResponse<T> {
   data: T;
   meta: ResponseMetaDto;
+}
+
+export interface ApiErrorDetail {
+  code: string;
+  message: string;
+  details?: unknown;
+  requestId?: string | null;
+}
+
+export interface ApiErrorEnvelope {
+  error: ApiErrorDetail;
 }

@@ -4,16 +4,22 @@
   margin: 0 auto;
 }
 
+.home-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.home-main {
+  min-width: 0;
+}
+
 .hero {
   padding: 1.2rem;
   border-radius: 16px;
   background: linear-gradient(135deg, #1e4620, #2a7030);
   color: #f6fff2;
-}
-
-.pick-link {
-  color: #e9ffd4;
-  font-weight: 700;
 }
 
 .error-banner {
@@ -39,6 +45,25 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+}
+
+.section-error {
+  margin: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: #fff2f2;
+  color: #9b1c1c;
+  border: 1px solid #f4c7c7;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.loading-text {
+  margin: 0.5rem 0 0.6rem;
+  color: #355f39;
+  font-size: 0.92rem;
 }
 
 .stale {
@@ -76,6 +101,25 @@
   text-transform: capitalize;
 }
 
+.panel.upcoming {
+  background: #f4f8ff;
+  box-shadow: 0 6px 24px rgba(19, 40, 90, 0.07);
+}
+
+.upcoming-card {
+  background: #e8f0fe;
+
+  &:hover {
+    background: #d2e3fc;
+  }
+}
+
+.upcoming-badge {
+  font-size: 0.78rem;
+  color: #1a56af;
+  font-weight: 600;
+}
+
 .empty-card {
   margin-top: 1rem;
   border: 2px dashed #66a76f;
@@ -86,4 +130,63 @@
 
 .empty-text {
   margin: 0.4rem 0 0.8rem;
+}
+
+.my-teams-rail {
+  margin-top: 1.4rem;
+  border-radius: 14px;
+  padding: 1rem;
+  background: #f7fbf3;
+  box-shadow: 0 6px 24px rgba(19, 54, 22, 0.08);
+  border: 1px solid #d9ead2;
+}
+
+.my-teams-rail h2 {
+  margin: 0;
+}
+
+.league-group + .league-group {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #dce9d8;
+}
+
+.league-group h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #245029;
+}
+
+.league-group ul {
+  margin: 0.45rem 0 0;
+  padding-left: 1rem;
+}
+
+.league-group li + li {
+  margin-top: 0.2rem;
+}
+
+.my-teams-empty {
+  margin: 0;
+  color: #2f6d35;
+  font-weight: 600;
+}
+
+.my-teams-empty-link {
+  display: inline-block;
+  margin-top: 0;
+  padding-bottom: 0.55rem;
+  color: #2f6d35;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .my-teams-rail {
+    margin-top: 0;
+  }
 }
