@@ -51,14 +51,14 @@ describe('GameViewPageComponent', () => {
           },
           teamStats: [
             {
-              displayName: 'Team Totals',
-              statistics: [{ name: 'FG%', displayValue: '48.2' }],
+              title: 'Cleveland Cavaliers',
+              rows: [{ label: 'FG%', value: '48.2' }],
             },
           ],
           playerStats: [
             {
-              displayName: 'Top Performers',
-              statistics: [{ name: 'Points', displayValue: '31' }],
+              title: 'Boston Celtics - Starters',
+              rows: [{ label: 'Jayson Tatum', value: 'PTS: 31 | REB: 8 | AST: 6' }],
             },
           ],
         },
@@ -91,13 +91,14 @@ describe('GameViewPageComponent', () => {
     expect(component.detail()?.summary.eventId).toBe('evt-1');
   });
 
-  it('normalizes stat groups for table rendering', () => {
+  it('uses API-provided stat group labels for rendering', () => {
     const fixture = TestBed.createComponent(GameViewPageComponent);
     const component = fixture.componentInstance;
 
     expect(component.teamStatGroups().length).toBe(1);
-    expect(component.teamStatGroups()[0].title).toBe('Team Totals');
+    expect(component.teamStatGroups()[0].title).toBe('Cleveland Cavaliers');
     expect(component.teamStatGroups()[0].rows[0]).toEqual({ label: 'FG%', value: '48.2' });
+    expect(component.playerStatGroups()[0].title).toBe('Boston Celtics - Starters');
   });
 
   it('shows not found state when route params are invalid', async () => {
