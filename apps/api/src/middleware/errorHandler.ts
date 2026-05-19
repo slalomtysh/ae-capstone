@@ -16,7 +16,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ): void {
-  const requestId = req.header('x-request-id') ?? null;
+  const requestId = (req as Request & { requestId?: string }).requestId ?? req.header('x-request-id') ?? null;
   if (error instanceof ApiError) {
     res.status(error.status).json({
       error: {

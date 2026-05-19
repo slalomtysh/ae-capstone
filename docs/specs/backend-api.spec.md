@@ -14,10 +14,10 @@ Provide stable REST endpoints for frontend score views while isolating ESPN API 
 
 ### GET /api/games/live
 
-Returns all games for favorite teams on today's UTC date, any status (pre/live/final).
+Returns all games for favorite teams on today's local date, any status (pre/live/final).
 
-- Query params: `teamIds` (comma-separated, required), `sports` (comma-separated, required).
-- Excludes games with a start date outside today's UTC date.
+- Query params: `teamIds` (comma-separated, required), `sports` (comma-separated, required), `timezone` (IANA timezone, optional; defaults to UTC).
+- Excludes games with a start date outside today's local date (for the resolved timezone), except in-progress carryover games from the previous local date.
 
 ### GET /api/games/upcoming
 
@@ -26,12 +26,14 @@ Returns pre-scheduled games for favorite teams in the next 1–7 days (not today
 - Query params: `teamIds` (comma-separated, required), `sports` (comma-separated, required).
 - Only events with status = pre are returned.
 - Results ordered ascending by start time.
+- Date bucketing is based on local date in the resolved timezone.
 
 ### GET /api/games/recent
 
 Returns final games for favorite teams in the last 7 days before today (today excluded).
 
 - Query params: `teamIds` (comma-separated, required), `sports` (comma-separated, required), `days` (default 7).
+- Date bucketing is based on local date in the resolved timezone.
 
 ## Functional Requirements
 

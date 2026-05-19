@@ -15,7 +15,8 @@ Allow user to search/select favorite teams and persist choices locally.
 - User can add and remove favorites.
 - User can select up to 20 favorite teams total.
 - Save favorites to local storage and use them across app views.
-- Expose clear action to return Home after saving.
+- Saved favorites feed Home My Teams grouped display by league.
+- Expose clear action to return Home after saving (button label: "Save My Teams").
 
 ## UX Requirements
 
@@ -32,9 +33,12 @@ Allow user to search/select favorite teams and persist choices locally.
 ## Acceptance Criteria
 
 - Saved favorites are reflected on Home after navigation.
+- Home My Teams rail lists saved favorites grouped by league in Team Selection order.
 - Favorites remain after browser refresh.
 - Removing a team removes its games from Home feed.
 - Attempting to select a 21st team is blocked with an inline limit message.
+- Previously saved teams appear selected/highlighted when revisiting Team Selection.
+- Users can add new teams without reselecting previously saved teams.
 
 ## Dependencies
 

@@ -58,3 +58,18 @@ export function parseDays(input: unknown, fallback = 7): number {
   }
   return Math.floor(parsed);
 }
+
+export function parseTimeZone(input: unknown, fallback = 'UTC'): string {
+  if (typeof input !== 'string' || !input.trim()) {
+    return fallback;
+  }
+
+  const value = input.trim();
+  try {
+    // Throws RangeError for invalid IANA time zone identifiers.
+    new Intl.DateTimeFormat('en-US', { timeZone: value });
+    return value;
+  } catch {
+    return fallback;
+  }
+}

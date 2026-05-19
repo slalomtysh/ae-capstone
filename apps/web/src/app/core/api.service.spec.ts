@@ -25,6 +25,7 @@ describe('ApiService', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('teamIds')).toBe('1');
     expect(req.request.params.get('sports')).toBe('nfl');
+    expect(req.request.params.has('timezone')).toBe(true);
     req.flush({ data: [], meta: {} });
   });
 
@@ -34,6 +35,7 @@ describe('ApiService', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('teamIds')).toBe('1');
     expect(req.request.params.get('sports')).toBe('nba');
+    expect(req.request.params.has('timezone')).toBe(true);
     req.flush({ data: [], meta: {} });
   });
 
@@ -43,6 +45,7 @@ describe('ApiService', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('teamIds')).toBe('1');
     expect(req.request.params.get('sports')).toBe('mlb');
+    expect(req.request.params.has('timezone')).toBe(true);
     expect(req.request.params.get('days')).toBe('7');
     req.flush({ data: [], meta: {} });
   });

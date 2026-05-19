@@ -21,7 +21,7 @@
 
 ## Home Screen Section Definitions
 
-- Live Games: games for favorite teams on today's UTC date, any status (pre/live/final).
+- Live Games: games for favorite teams on today's local date, any status (pre/live/final), plus in-progress carryover games from the previous local date.
 - Upcoming Games: games for favorite teams in the next 1–7 days (not today), pre-scheduled status only, ordered ascending by start time.
 - Recent Games: final games for favorite teams in the 7 days before today (today excluded).
 

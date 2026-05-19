@@ -11,17 +11,17 @@ Show pre-scheduled games for the user's favorite teams in the next 1–7 days (n
 
 ## Functional Requirements
 
-- Display cards for games involving favorite teams where the game date (UTC) is between tomorrow and 7 days from today (inclusive).
+- Display cards for games involving favorite teams where the game date (in the user's local timezone) is between tomorrow and 7 days from today (inclusive).
 - Only include games with pre-scheduled status (not live, not final).
-- Do NOT include today's games (those belong in Live Games).
+- Do NOT include today's games (those belong in Today's Games).
 - Display game date and start time in user local timezone.
 - Clicking a game opens Game View.
 - Cards are ordered ascending by scheduled start time (soonest first).
 
 ## UX Requirements
 
-- Section appears between Live Games and Recent Games on the home screen.
-- Visually distinct from Live Games — use a lighter/future-oriented card style (e.g. calendar or clock indicator).
+- Section appears between Today's Games and Recent Games on the home screen.
+- Visually distinct from Today's Games — use a lighter/future-oriented card style (e.g. calendar or clock indicator).
 - Sports icon shown on each game card.
 - Show opponent, scheduled date/time, and sport.
 - Empty-state copy when favorites exist but no upcoming games: "No upcoming games in the next 7 days".

@@ -47,6 +47,24 @@
   - added accessibility checks via axe-core/playwright; no critical violations detected on home screen
   - all quality gates passing: npm run lint ✓, npm run format:check ✓, npm run test (20/20 passing) ✓, npm run e2e ✓, npm run a11y ✓
 
+## 2026-05-19
+
+- Completed reliability hardening phases for games loading:
+  - Phase 1 baseline captured for API-down, query validation, and stale-fallback behavior.
+  - Phase 2 frontend resilience implemented with section-isolated loading/errors and per-section retry.
+  - Phase 3 backend resilience implemented with per-sport fault isolation, env-tunable upstream policy, and richer upstream error metadata.
+- Completed Phase 4 verification and release guardrails:
+  - updated core E2E journey selector to match current Home UX (`edit teams` entry point)
+  - added E2E coverage for partial-category failure behavior on Home (one category fails, others still render)
+  - validated quality gates after updates:
+    - `npm run lint` ✓
+    - `npm run test` ✓ (web + api)
+    - `npm run e2e` ✓ (3/3)
+    - `npm run a11y` ✓
+  - documented deployment gates and post-release watchpoints in QA strategy.
+- Open environment note:
+  - local runtime check returned Node.js `v24.14.0`; release gate remains pinned to `v25.6.1`.
+
 ## Update Template
 
 - Date:

@@ -1,5 +1,7 @@
 import type { GameDetailDto, GameStatus, GameSummaryDto, TeamScoreDto } from '../types.js';
 
+const INVALID_DATE_FALLBACK_ISO = '1970-01-01T00:00:00.000Z';
+
 function toNumberOrNull(input: unknown): number | null {
   const value = Number(input);
   return Number.isFinite(value) ? value : null;
@@ -14,6 +16,37 @@ function toTeamScoreDto(raw: any): TeamScoreDto {
     score: toNumberOrNull(raw?.score),
     record: raw?.records?.[0]?.summary ?? null,
   };
+}
+
+function normalizeUpstreamTimestamp(value: string): string {
+  const raw = value.trim();
+  if (!raw) {
+    return raw;
+  }
+
+  // ESPN can emit timestamps without timezone suffix; treat those as UTC.
+  const isoWithoutTimezone =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?$/.test(raw);
+  if (isoWithoutTimezone) {
+    return `${raw}Z`;
+  }
+
+  // Normalize date-only values to UTC midnight.
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(raw);
+  if (dateOnly) {
+    return `${raw}T00:00:00.000Z`;
+  }
+
+  return raw;
+}
+
+export function toUtcIsoString(value: unknown): string {
+  const normalizedValue = normalizeUpstreamTimestamp(String(value ?? ''));
+  const parsed = new Date(normalizedValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return INVALID_DATE_FALLBACK_ISO;
+  }
+  return parsed.toISOString();
 }
 
 function deriveStatus(rawStatus: any): GameStatus {
@@ -79,7 +112,7 @@ export function mapGameSummary(rawEvent: any, sport: string): GameSummaryDto {
     sport,
     status: deriveStatus(rawEvent?.status),
     outcomeLabel: deriveOutcomeLabel(rawEvent),
-    startTimeUtc: String(rawEvent?.date ?? new Date().toISOString()),
+    startTimeUtc: toUtcIsoString(rawEvent?.date),
     homeTeam: toTeamScoreDto(homeRaw),
     awayTeam: toTeamScoreDto(awayRaw),
     venue: rawEvent?.competitions?.[0]?.venue?.fullName ?? null,
@@ -102,14 +135,88 @@ export function mapTeams(raw: any): Array<{
   displayName: string;
   abbreviation: string;
   sport: string;
+  conference: string | null;
+  logoUrl: string | null;
+}>;
+
+export function mapTeams(
+  raw: any,
+  conferenceByTeamId: ReadonlyMap<string, string> = new Map(),
+): Array<{
+  teamId: string;
+  displayName: string;
+  abbreviation: string;
+  sport: string;
+  conference: string | null;
   logoUrl: string | null;
 }> {
-  const teams = raw?.sports?.[0]?.leagues?.[0]?.teams ?? [];
-  return teams.map((entry: any) => ({
-    teamId: String(entry?.team?.id ?? ''),
-    displayName: String(entry?.team?.displayName ?? entry?.team?.name ?? 'Unknown Team'),
-    abbreviation: String(entry?.team?.abbreviation ?? ''),
-    sport: String(raw?.sports?.[0]?.slug ?? ''),
-    logoUrl: entry?.team?.logos?.[0]?.href ?? null,
-  }));
+  const sports = raw?.sports ?? [];
+  const allTeams = sports.flatMap((sportEntry: any) =>
+    (sportEntry?.leagues ?? []).flatMap((leagueEntry: any) => leagueEntry?.teams ?? []),
+  );
+  const byId = new Map<
+    string,
+    {
+      teamId: string;
+      displayName: string;
+      abbreviation: string;
+      sport: string;
+      conference: string | null;
+      logoUrl: string | null;
+    }
+  >();
+
+  for (const entry of allTeams) {
+    const teamId = String(entry?.team?.id ?? '');
+    if (!teamId || byId.has(teamId)) {
+      continue;
+    }
+    byId.set(teamId, {
+      teamId,
+      displayName: String(entry?.team?.displayName ?? entry?.team?.name ?? 'Unknown Team'),
+      abbreviation: String(entry?.team?.abbreviation ?? ''),
+      sport: String(sports?.[0]?.slug ?? ''),
+      conference:
+        conferenceByTeamId.get(teamId) ??
+        entry?.team?.groups?.[0]?.name ??
+        entry?.team?.groups?.[0]?.shortName ??
+        entry?.groups?.[0]?.name ??
+        null,
+      logoUrl: entry?.team?.logos?.[0]?.href ?? null,
+    });
+  }
+
+  return Array.from(byId.values());
+}
+
+export function mapConferenceByTeamIdFromStandings(raw: any): Map<string, string> {
+  const byTeamId = new Map<string, string>();
+
+  const visit = (node: any): void => {
+    if (!node || typeof node !== 'object') {
+      return;
+    }
+
+    const conferenceName =
+      typeof node.name === 'string' && node.name.trim().length > 0 ? node.name.trim() : null;
+    const entries = node?.standings?.entries ?? [];
+    if (conferenceName && Array.isArray(entries)) {
+      for (const entry of entries) {
+        const teamId = String(entry?.team?.id ?? '').trim();
+        if (teamId && !byTeamId.has(teamId)) {
+          byTeamId.set(teamId, conferenceName);
+        }
+      }
+    }
+
+    const children = node?.children ?? [];
+    if (Array.isArray(children)) {
+      for (const child of children) {
+        visit(child);
+      }
+    }
+  };
+
+  visit(raw);
+  return byTeamId;
 }

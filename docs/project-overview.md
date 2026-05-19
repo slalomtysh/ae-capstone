@@ -41,11 +41,16 @@ Supported sports in v1:
 
 ## Views / Screens
 
-- Home (Live Games + Upcoming Games + Recent Games):
-  - Live Games section shows all games for favorite teams scheduled on today's UTC date (any status: pre, live, or final).
+- Home (Today's Games + Upcoming Games + Recent Games + My Teams):
+  - Today's Games section shows all games for favorite teams scheduled on today's local date (any status: pre, live, or final).
+  - Today's Games also includes games that are currently in progress even when they started on the previous local date.
   - Upcoming Games section shows games for favorite teams scheduled in the next 1–7 days (pre-scheduled only, not today).
   - Recent Games section shows completed (final) games for favorite teams from the last 7 days (before today).
   - All sections support stale-data presentation with a visible timestamp when served from cache.
+  - My Teams rail appears on the right side of Home on desktop/tablet and lists saved favorites grouped by league.
+  - The "choose your teams" CTA is located in the My Teams rail.
+  - My Teams rail uses Team Selection league order: NFL, NBA, MLB, NHL, NCAA Football, NCAA Basketball, Soccer.
+  - On mobile widths, My Teams stacks below the game sections.
 - Game View:
   - Opened by clicking a game card from Home.
   - Shows detailed box score and player/team statistics.

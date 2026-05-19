@@ -50,4 +50,46 @@ describe('FavoritesService', () => {
     expect(service.favorites().length).toBe(1);
     expect(service.favorites()[0].teamId).toBe('7');
   });
+
+  it('normalizes legacy sport aliases loaded from storage', () => {
+    getItemSpy.mockReturnValue(
+      JSON.stringify([
+        { teamId: '7', sport: 'football', teamName: 'Legacy Football Team' },
+        { teamId: '8', sport: 'basketball', teamName: 'Legacy Basketball Team' },
+      ]),
+    );
+
+    const service = new FavoritesService();
+    expect(service.isFavorite('7', 'nfl')).toBe(true);
+    expect(service.isFavorite('8', 'nba')).toBe(true);
+  });
+
+  it('normalizes malformed nlh alias loaded from storage', () => {
+    getItemSpy.mockReturnValue(
+      JSON.stringify([{ teamId: '10', sport: 'nlh', teamName: 'Legacy NHL Team' }]),
+    );
+
+    const service = new FavoritesService();
+    expect(service.isFavorite('10', 'nhl')).toBe(true);
+    expect(service.favorites()[0].sport).toBe('nhl');
+  });
+
+  it('treats same teamId in different sports as distinct favorites', () => {
+    const service = new FavoritesService();
+
+    service.setFavorites([
+      { teamId: '1', sport: 'nfl', teamName: 'Bills' },
+      { teamId: '1', sport: 'nba', teamName: 'Cavaliers' },
+    ]);
+
+    expect(service.isFavorite('1', 'nfl')).toBe(true);
+    expect(service.isFavorite('1', 'nba')).toBe(true);
+
+    service.toggleFavorite({ teamId: '1', sport: 'nfl', teamName: 'Bills' });
+
+    expect(service.isFavorite('1', 'nfl')).toBe(false);
+    expect(service.isFavorite('1', 'nba')).toBe(true);
+    expect(service.favorites().length).toBe(1);
+    expect(service.favorites()[0].teamName).toBe('Cavaliers');
+  });
 });

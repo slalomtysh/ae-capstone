@@ -1,5 +1,5 @@
 import { STALE_TTL_MINUTES } from '../config.js';
-import { UpstreamError } from '../errors.js';
+import { ApiError, UpstreamError } from '../errors.js';
 import type { ApiResponse, ResponseMetaDto } from '../types.js';
 import type { MemoryCache } from './cache.js';
 
@@ -38,8 +38,15 @@ export async function withStaleFallback<T>(
       }
     }
 
+    const causeDetails =
+      error instanceof ApiError && typeof error.details === 'object' && error.details !== null
+        ? error.details
+        : undefined;
+
     throw new UpstreamError('Upstream failed and no eligible stale cache was available', {
       staleTtlMinutes: STALE_TTL_MINUTES,
+      ...(causeDetails ?? {}),
+      causeCode: error instanceof ApiError ? error.code : undefined,
       cause: error instanceof Error ? error.message : String(error),
     });
   }

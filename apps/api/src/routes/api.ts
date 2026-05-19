@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { NCAAF_CONFERENCE_GROUP_IDS } from '../config.js';
 import { MemoryCache } from '../lib/cache.js';
 import { withStaleFallback } from '../lib/withStaleFallback.js';
-import { parseDays, parseSports, requireSport, requireTeamIds } from '../lib/query.js';
-import { buildTeamsUrl } from '../espn/urls.js';
-import { mapTeams } from '../espn/mappers.js';
+import { parseDays, parseSports, parseTimeZone, requireSport, requireTeamIds } from '../lib/query.js';
+import { buildStandingsUrl, buildTeamsUrl } from '../espn/urls.js';
+import { mapConferenceByTeamIdFromStandings, mapTeams } from '../espn/mappers.js';
 import {
   fetchGameDetail,
   fetchLiveGames,
@@ -20,8 +21,22 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
       const sport = requireSport(req.query.sport);
       const cacheKey = `teams:${sport}`;
       const response = await withStaleFallback(cache, cacheKey, async () => {
-        const payload = await espnClient.getJson<any>(buildTeamsUrl(sport));
-        return mapTeams(payload);
+        const payload =
+          sport === 'ncaaf'
+            ? await fetchNcaafTeamsByConferenceGroups(espnClient)
+            : await espnClient.getJson<any>(buildTeamsUrl(sport));
+        const isCollegeSport = sport === 'ncaaf' || sport === 'ncaam';
+        if (!isCollegeSport) {
+          return mapTeams(payload);
+        }
+
+        try {
+          const standingsPayload = await espnClient.getJson<any>(buildStandingsUrl(sport));
+          const conferenceByTeamId = mapConferenceByTeamIdFromStandings(standingsPayload);
+          return mapTeams(payload, conferenceByTeamId);
+        } catch {
+          return mapTeams(payload);
+        }
       });
       res.json(response);
     } catch (error) {
@@ -33,9 +48,10 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
     try {
       const teamIds = requireTeamIds(req.query.teamIds);
       const sports = parseSports(req.query.sports);
-      const cacheKey = `games:live:${sports.join('|')}:${teamIds.join('|')}`;
+      const timeZone = parseTimeZone(req.query.timezone);
+      const cacheKey = `games:live:${sports.join('|')}:${teamIds.join('|')}:${timeZone}`;
       const response = await withStaleFallback(cache, cacheKey, () =>
-        fetchLiveGames(espnClient, sports, teamIds),
+        fetchLiveGames(espnClient, sports, teamIds, timeZone),
       );
       res.json(response);
     } catch (error) {
@@ -47,9 +63,10 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
     try {
       const teamIds = requireTeamIds(req.query.teamIds);
       const sports = parseSports(req.query.sports);
-      const cacheKey = `games:upcoming:${sports.join('|')}:${teamIds.join('|')}`;
+      const timeZone = parseTimeZone(req.query.timezone);
+      const cacheKey = `games:upcoming:${sports.join('|')}:${teamIds.join('|')}:${timeZone}`;
       const response = await withStaleFallback(cache, cacheKey, () =>
-        fetchUpcomingGames(espnClient, sports, teamIds),
+        fetchUpcomingGames(espnClient, sports, teamIds, timeZone),
       );
       res.json(response);
     } catch (error) {
@@ -62,9 +79,10 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
       const teamIds = requireTeamIds(req.query.teamIds);
       const sports = parseSports(req.query.sports);
       const days = parseDays(req.query.days, 7);
-      const cacheKey = `games:recent:${sports.join('|')}:${teamIds.join('|')}:${days}`;
+      const timeZone = parseTimeZone(req.query.timezone);
+      const cacheKey = `games:recent:${sports.join('|')}:${teamIds.join('|')}:${days}:${timeZone}`;
       const response = await withStaleFallback(cache, cacheKey, () =>
-        fetchRecentGames(espnClient, sports, teamIds, days),
+        fetchRecentGames(espnClient, sports, teamIds, days, timeZone),
       );
       res.json(response);
     } catch (error) {
@@ -87,4 +105,22 @@ export function createApiRouter(espnClient: EspnClient, cache: MemoryCache): Rou
   });
 
   return router;
+}
+
+async function fetchNcaafTeamsByConferenceGroups(espnClient: EspnClient): Promise<any> {
+  const payloads = await Promise.all(
+    NCAAF_CONFERENCE_GROUP_IDS.map((groupId) => espnClient.getJson<any>(buildTeamsUrl('ncaaf', groupId))),
+  );
+
+  const firstSport = payloads[0]?.sports?.[0] ?? {};
+  const mergedLeagues = payloads.flatMap((payload) => payload?.sports?.[0]?.leagues ?? []);
+
+  return {
+    sports: [
+      {
+        ...firstSport,
+        leagues: mergedLeagues,
+      },
+    ],
+  };
 }

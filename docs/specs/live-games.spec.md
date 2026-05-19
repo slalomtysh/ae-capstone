@@ -1,17 +1,18 @@
-# SPEC: Live Games (Home)
+# SPEC: Today's Games (Home)
 
 ## Goal
 
-Show all games for the user's favorite teams that are scheduled on today's UTC date, regardless of status.
+Show all games for the user's favorite teams that are scheduled on today's local date, regardless of status, and keep currently in-progress carryover games visible.
 
 ## Inputs
 
 - Favorite teams from local storage.
-- Backend endpoint for live games by team and sport.
+- Backend endpoint for today's games by team and sport.
 
 ## Functional Requirements
 
-- Display cards for games involving favorite teams where the game date (UTC) equals today's UTC date.
+- Display cards for games involving favorite teams where the game date (in the user's local timezone) equals today.
+- Include games that are currently in progress (live) even if the scheduled game date is the previous local date.
 - Include games with any status: pre-scheduled, in-progress (live), and final.
 - Do NOT include games scheduled on future dates (those belong in Upcoming Games).
 - Auto-refresh data every 30 seconds.
@@ -22,7 +23,7 @@ Show all games for the user's favorite teams that are scheduled on today's UTC d
 
 ## UX Requirements
 
-- Home-first layout: Live Games section appears above Upcoming Games and Recent Games.
+- Home-first layout: Today's Games section appears above Upcoming Games and Recent Games.
 - Sports icon shown on each game card.
 - Empty-state copy uses: "choose your teams" when no favorites are selected.
 - Clear fallback for no games today when favorites exist.
@@ -34,8 +35,9 @@ Show all games for the user's favorite teams that are scheduled on today's UTC d
 
 ## Acceptance Criteria
 
-- Given at least one favorite team with a game today (UTC), card appears within first fetch cycle.
-- Future pre-scheduled games (tomorrow or later) are NOT shown in the Live Games section.
+- Given at least one favorite team with a game today (local date), card appears within first fetch cycle.
+- Future pre-scheduled games (tomorrow or later) are NOT shown in the Today's Games section.
+- In-progress games that started on the previous local date remain visible in Today's Games while status is live.
 - Data refreshes every 30 seconds without full page reload.
 - If upstream fails and stale data exists with cache age <= 60 minutes, stale cards remain visible with stale indicator and timestamp.
 - If stale cache age is > 60 minutes, stale cards are not served and error state is shown.
@@ -48,7 +50,7 @@ Show all games for the user's favorite teams that are scheduled on today's UTC d
 
 ## Test Plan
 
-- Unit: today-UTC date filtering, polling scheduler, DTO mapping, empty/error states.
-- Integration: verify future-dated pre games are excluded; verify today's pre/live/final games are included.
+- Unit: today-local-date filtering, polling scheduler, DTO mapping, empty/error states.
+- Integration: verify future-dated pre games are excluded; verify today's pre/live/final games are included; verify previous-day in-progress games are included.
 - E2E: load home, verify live cards, verify periodic update behavior.
 - A11y: keyboard focus order and contrast checks.

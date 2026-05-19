@@ -28,6 +28,21 @@
 - Alternatives considered: Keep two sections but filter live to in-progress only — rejected because it would hide today's upcoming and completed games from the home view.
 - Consequences: New backend endpoint GET /api/games/upcoming added. fetchLiveGames redesigned to use today's UTC date range instead of status-based filtering. Frontend gains a third section card group and a new ApiService method.
 
+## 2026-05-18 — Today's Games Clarification + My Teams Rail
+
+- Decision: Rename Live Games to Today's Games and add Home-only My Teams right rail grouped by league.
+- Context: Users expect games happening now to remain visible in Today's Games even around UTC day boundaries, and requested a clear grouped view of saved teams on Home.
+- Section definitions updated:
+  - Today's Games: include all favorite-team games scheduled on today's UTC date (pre/live/final).
+  - Carryover: include in-progress games even if scheduled date is previous UTC day.
+  - Upcoming Games: unchanged +1 to +7 days, pre-only.
+  - Recent Games: unchanged prior 7 days, final-only.
+- Layout rules:
+  - My Teams appears as a right-side vertical rail on Home for desktop/tablet.
+  - On mobile, My Teams stacks below game sections.
+  - League group order matches Team Selection: NFL, NBA, MLB, NHL, NCAA Football, NCAA Basketball, Soccer.
+- Consequences: Backend live fetch widened to yesterday-through-today range with status/date guard, Home copy updated to Today's Games, and specs/requirements updated to match behavior.
+
 ## Template
 
 - Date:

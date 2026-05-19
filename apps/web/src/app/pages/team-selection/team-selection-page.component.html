@@ -22,13 +22,36 @@
 
   @if (loading()) {
     <p>Loading teams...</p>
+  } @else if (isConferenceSport()) {
+    <div class="conference-groups">
+      @for (group of conferenceGroups(); track group.conference) {
+        <section class="conference-group">
+          <h2>{{ group.conference }}</h2>
+          <div class="team-grid">
+            @for (team of group.teams; track team.teamId + ':' + team.displayName) {
+              <button
+                type="button"
+                class="team-chip"
+                [class.selected]="isSelected(team)"
+                (click)="toggleTeam(team)"
+              >
+                @if (team.logoUrl) {
+                  <img [src]="team.logoUrl" [alt]="team.displayName + ' logo'" />
+                }
+                <span>{{ team.displayName }}</span>
+              </button>
+            }
+          </div>
+        </section>
+      }
+    </div>
   } @else {
     <div class="team-grid">
-      @for (team of teams(); track team.teamId) {
+      @for (team of teams(); track team.teamId + ':' + team.displayName) {
         <button
           type="button"
           class="team-chip"
-          [class.selected]="isSelected(team.teamId)"
+          [class.selected]="isSelected(team)"
           (click)="toggleTeam(team)"
         >
           @if (team.logoUrl) {
@@ -44,7 +67,7 @@
     @if (saveMessage()) {
       <span class="saved">{{ saveMessage() }}</span>
     }
-    <button type="button" class="save" (click)="save()">Save & Home</button>
+    <button type="button" class="save" (click)="save()">Save My Teams</button>
     <a routerLink="/">Cancel</a>
   </footer>
 </main>

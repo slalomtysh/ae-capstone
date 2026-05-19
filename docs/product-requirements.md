@@ -12,10 +12,11 @@ Build a sports score dashboard web app in a monorepo with Angular 21 frontend an
 - Favorite teams limit: 20 teams maximum.
 - Live refresh cadence: every 30 seconds.
 - Timezone display: always user local timezone.
-- Home screen: three sections — Live Games (today UTC, any status), Upcoming Games (+1 to +7 days, pre-scheduled only), Recent Games (before today, final only).
-- Live games: favorite teams only, today's UTC date, any status (pre/live/final).
+- Home screen: three game sections — Today's Games (today local date, any status), Upcoming Games (+1 to +7 local days, pre-scheduled only), Recent Games (before today local date, final only).
+- Today's Games: favorite teams only, today's local date, any status (pre/live/final), plus in-progress carryover games that started on the previous local date.
 - Upcoming games: favorite teams only, next 1–7 days from today, pre-scheduled events only.
 - Recent games: favorite teams only, last 7 days before today, final status only.
+- Home My Teams rail: Home-only right-side vertical rail on desktop/tablet, stacked below sections on mobile, grouped by league in Team Selection order.
 - Empty state primary copy: "choose your teams".
 - Game view depth: full box score and player stats.
 - Game view stats scope: all available stats from upstream response.
@@ -31,6 +32,7 @@ Build a sports score dashboard web app in a monorepo with Angular 21 frontend an
 - As a user, I can view live scores that refresh automatically.
 - As a user, I can view upcoming scheduled games for my favorite teams in the next 7 days.
 - As a user, I can view recent game scores from the last 7 days.
+- As a user, I can see my saved teams grouped by league in a My Teams rail on Home.
 - As a user, I can open a game details page with full box score and player stats.
 - As a user, I can always navigate back to the home screen.
 
