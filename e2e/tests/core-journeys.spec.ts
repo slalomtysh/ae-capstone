@@ -157,8 +157,8 @@ test('favorites -> home -> game detail -> home navigation', async ({ page }) => 
   await page.getByRole('button').filter({ hasText: 'BUF' }).first().click();
 
   await expect(page).toHaveURL(/\/games\/nfl\/evt-live-1/);
-  await expect(page.getByRole('heading', { level: 2, name: 'Team Stat Groups' })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 2, name: 'Player Stat Groups' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Team Stats' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Player Stats' })).toBeVisible();
   await expect(page.locator('.game-page .home-link')).toBeVisible();
   await page.locator('.game-page .home-link').click();
   await expect(page).toHaveURL('/');

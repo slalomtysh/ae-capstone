@@ -22,8 +22,18 @@ export interface GameSummaryDto {
 
 export interface GameDetailDto {
   summary: GameSummaryDto;
-  teamStats: unknown[];
-  playerStats: unknown[];
+  teamStats: GameStatGroupDto[];
+  playerStats: GameStatGroupDto[];
+}
+
+export interface GameStatRowDto {
+  label: string;
+  value: string;
+}
+
+export interface GameStatGroupDto {
+  title: string;
+  rows: GameStatRowDto[];
 }
 
 export interface ResponseMetaDto {
